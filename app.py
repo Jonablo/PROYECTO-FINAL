@@ -1,18 +1,23 @@
 import streamlit as st
 import pulp
-import numpy as np
-import shap
-import matplotlib.pyplot as plt
+from fractions import Fraction
 
-# 🔹 **Función para Resolver el Problema de Programación Lineal (Sin Flotantes)**
 def solve_linear_program(obj_coeffs, constraints, constraint_sides, rhs_values, maximize=True):
+    # Convertir todos los valores a fracciones para mayor precisión
+    obj_coeffs = [Fraction(c) for c in obj_coeffs]
+    constraints = [[Fraction(c) for c in row] for row in constraints]
+    rhs_values = [Fraction(r) for r in rhs_values]
+    
+    # Imprimir los valores convertidos para verificar
+    print("Función Objetivo:", obj_coeffs)
+    print("Restricciones:", constraints)
+    print("Lado Derecho:", rhs_values)
+    print("Tipos de Restricción:", constraint_sides)
+    
     prob = pulp.LpProblem("Linear_Programming", pulp.LpMaximize if maximize else pulp.LpMinimize)
-    
     num_vars = len(obj_coeffs)
-    variables = [pulp.LpVariable(f"x{i+1}", lowBound=0, cat='Integer') for i in range(num_vars)]
-    
+    variables = [pulp.LpVariable(f"x{i+1}", lowBound=0) for i in range(num_vars)]
     prob += pulp.lpDot(obj_coeffs, variables), "Objective"
-    
     for i in range(len(constraints)):
         if constraint_sides[i] == "leq":
             prob += (pulp.lpDot(constraints[i], variables) <= rhs_values[i])
@@ -21,18 +26,16 @@ def solve_linear_program(obj_coeffs, constraints, constraint_sides, rhs_values, 
         elif constraint_sides[i] == "eq":
             prob += (pulp.lpDot(constraints[i], variables) == rhs_values[i])
     
-    prob.solve()
+    prob.solve(pulp.PULP_CBC_CMD(mip=True, msg=True, presolve=True, strong=True, cuts=True, timeLimit=10))
     
     result = {"Status": pulp.LpStatus[prob.status]}
     for var in variables:
-        result[var.name] = int(var.varValue) if var.varValue is not None else None
-    result["Objective Value"] = int(pulp.value(prob.objective)) if pulp.value(prob.objective) is not None else None
+        result[var.name] = str(Fraction(var.varValue).limit_denominator())  # Mostrar como fracción
+    result["Objective Value"] = str(Fraction(pulp.value(prob.objective)).limit_denominator())  # Mostrar como fracción
     
-    return result, obj_coeffs, constraints, rhs_values
+    return result
 
-# 🔹 **Interfaz en Streamlit**
-st.set_page_config(page_title="Optimización Operativa", layout="wide")
-st.title("📊 Optimización Lineal - Método Simplex con Análisis de Sensibilidad")
+st.title("Optimización Lineal - Método Simplex con Fracciones")
 
 if "num_vars" not in st.session_state:
     st.session_state.num_vars = 2
@@ -58,7 +61,7 @@ with st.form("formulario"):
     obj_coeffs = []
     cols = st.columns(st.session_state.num_vars)
     for i in range(st.session_state.num_vars):
-        obj_coeffs.append(int(cols[i].number_input(f"Coeficiente x{i+1}", value=1, step=1, key=f"obj_x{i+1}")))
+        obj_coeffs.append(cols[i].number_input(f"Coeficiente x{i+1}", value=1.0, key=f"obj_x{i+1}"))
     
     st.subheader("Restricciones")
     constraints = []
@@ -68,43 +71,19 @@ with st.form("formulario"):
         cols = st.columns(st.session_state.num_vars + 2)
         row = []
         for j in range(st.session_state.num_vars):
-            row.append(int(cols[j].number_input(f"x{j+1} en R{i+1}", value=1, step=1, key=f"coef_r{i+1}_x{j+1}")))
+            row.append(cols[j].number_input(f"x{j+1} en R{i+1}", value=1.0, key=f"coef_r{i+1}_x{j+1}"))
         constraints.append(row)
         constraint_sides.append(cols[st.session_state.num_vars].selectbox(f"Restricción {i+1}", ["≤", "≥", "="], key=f"constraint_type_{i+1}"))
-        rhs_values.append(int(cols[st.session_state.num_vars+1].number_input(f"Valor R{i+1}", value=1, step=1, key=f"rhs_{i+1}")))
+        rhs_values.append(cols[st.session_state.num_vars+1].number_input(f"Valor R{i+1}", value=1.0, key=f"rhs_{i+1}"))
     
     submitted = st.form_submit_button("Resolver")
-
-if submitted:
-    # 🔹 **Resolver el problema de Programación Lineal**
-    solution, obj_coeffs, constraints, rhs_values = solve_linear_program(
-        obj_coeffs, 
-        constraints, 
-        ["leq" if s == "≤" else "geq" if s == "≥" else "eq" for s in constraint_sides], 
-        rhs_values, 
-        maximize
-    )
-    
-    st.write("### 📌 Resultados")
-    st.write(solution)
-
-    # 🔹 **Análisis de Sensibilidad con SHAP**
-    st.subheader("🔍 Análisis de Sensibilidad")
-
-    # **Datos en Enteros para SHAP**
-    datos_np = np.array([[v for v in obj_coeffs] + 
-                         [v for row in constraints for v in row] + 
-                         [v for v in rhs_values]])
-
-    # **Modelo Proxy para SHAP**
-    def modelo_proxy(X):
-        return np.dot(X, np.array(obj_coeffs + [0] * (X.shape[1] - len(obj_coeffs))))
-
-    # Explicador SHAP usando KernelExplainer
-    explainer = shap.KernelExplainer(modelo_proxy, datos_np)
-    shap_values = explainer.shap_values(datos_np)
-
-    # **Visualización de SHAP**
-    fig, ax = plt.subplots(figsize=(6, 4))
-    shap.summary_plot(shap_values, datos_np, show=False)
-    st.pyplot(fig)
+    if submitted:
+        solution = solve_linear_program(
+            obj_coeffs, 
+            constraints, 
+            ["leq" if s == "≤" else "geq" if s == "≥" else "eq" for s in constraint_sides], 
+            rhs_values, 
+            maximize
+        )
+        st.write("### Resultados (en fracciones)")
+        st.write(solution)
