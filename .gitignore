@@ -1,0 +1,45 @@
+# Ignorar el entorno virtual
+venv/
+lib/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Archivos de configuración de Streamlit
+.streamlit/
+
+# Archivos de caché de Jupyter y Streamlit
+.ipynb_checkpoints/
+.db/
+.cache/
+
+# Configuración de PyCharm y VSCode
+.vscode/
+.idea/
+
+# Archivos de logs y depuración
+*.log
+*.out
+*.err
+
+# Dependencias de Python
+Pipfile
+Pipfile.lock
+requirements.txt
+
+# Archivos de compilación
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Ignorar datos sensibles o archivos de exportación
+*.csv
+*.xlsx
+*.json
+*.db
+
+# Archivos de Streamlit Deploy
+.secrets.toml
