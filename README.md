@@ -35,19 +35,20 @@ Consulte el archivo `requirements.txt` para la lista completa de dependencias.
 1. **Clona el repositorio:**
    ```bash
    git clone https://github.com/Jonablo/PROYECTO-FINAL.git
-Navega al directorio del proyecto:
 
-bash
-Copiar
-Editar
+2. **Navega al directorio del proyecto:**
+
+```bash
 cd PROYECTO-FINAL
-Instala las dependencias:
+```
 
-bash
-Copiar
-Editar
+3. **Instala las dependencias:**
+
+```bash
 pip install -r requirements.txt
-Uso
+```
+4. **Uso**
+
 La aplicación se divide en módulos que se pueden ejecutar individualmente para cada método de optimización:
 
 Programación Lineal (Simplex): Ejecuta el modelo para la asignación óptima.
@@ -57,9 +58,7 @@ Análisis de Sensibilidad con IA: Ejecuta el módulo que simula escenarios varia
 Cada módulo cuenta con su propia documentación interna para el uso y la interpretación de los resultados.
 
 Estructura del Proyecto
-bash
-Copiar
-Editar
+```bash
 PROYECTO-FINAL/
 ├── simplex.py               # Modelo de Programación Lineal (Simplex)
 ├── transporte.py            # Métodos de Transporte
@@ -68,25 +67,27 @@ PROYECTO-FINAL/
 ├── requirements.txt         # Dependencias del proyecto
 ├── README.md                # Este archivo
 └── docs/                    # Documentación adicional y capturas de pantalla
+```
+
 Contribuciones
 Se agradecen las contribuciones al proyecto. Para proponer mejoras o correcciones:
 
 Haz un fork del repositorio.
 Crea una rama para tu funcionalidad o corrección:
-bash
-Copiar
-Editar
+```bash
 git checkout -b feature/nueva-funcionalidad
+```
+
 Realiza los cambios y haz commit:
-bash
-Copiar
-Editar
+```bash
 git commit -am 'Añadir nueva funcionalidad'
+```
 Envía tu rama:
-bash
-Copiar
-Editar
+```bash
 git push origin feature/nueva-funcionalidad
+```
+
 Abre un Pull Request explicando tus cambios.
+
 Licencia
 Este proyecto está licenciado bajo la Licencia MIT. Consulte el archivo LICENSE para más detalles.
