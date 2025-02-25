@@ -26,7 +26,6 @@ La aplicación se desarrolló como parte del Proyecto Final de Investigación Op
   - SciPy
   - Pandas
   - Matplotlib
-  - [Otras dependencias específicas según el módulo]
 
 Consulte el archivo `requirements.txt` para la lista completa de dependencias.
 
@@ -39,13 +38,13 @@ Consulte el archivo `requirements.txt` para la lista completa de dependencias.
 2. **Navega al directorio del proyecto:**
 
 ```bash
-cd PROYECTO-FINAL
+   cd PROYECTO-FINAL
 ```
 
 3. **Instala las dependencias:**
 
 ```bash
-pip install -r requirements.txt
+   pip install -r requirements.txt
 ```
 4. **Uso**
 
@@ -75,16 +74,16 @@ Se agradecen las contribuciones al proyecto. Para proponer mejoras o correccione
 Haz un fork del repositorio.
 Crea una rama para tu funcionalidad o corrección:
 ```bash
-git checkout -b feature/nueva-funcionalidad
+   git checkout -b feature/nueva-funcionalidad
 ```
 
 Realiza los cambios y haz commit:
 ```bash
-git commit -am 'Añadir nueva funcionalidad'
+   git commit -am 'Añadir nueva funcionalidad'
 ```
 Envía tu rama:
 ```bash
-git push origin feature/nueva-funcionalidad
+   git push origin feature/nueva-funcionalidad
 ```
 
 Abre un Pull Request explicando tus cambios.
